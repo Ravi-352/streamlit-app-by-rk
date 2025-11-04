@@ -41,3 +41,5 @@ docker run --rm -it -p 8501:8501 -p 8000:8000 my-mlapp-debug:3.10.19
 ```
 
 >[!NOTE] Along with 8051 for app, app.py exposes metrics at port 8000. This is where /metrics live. So prometheus uses this port internally for prometheus server to scrape metrics. To visualize the metrics in standalone prometheus UI --> that UI is exposed at port 9090 using docker-compose.yml file.
+> ```docker run --rm``` tells Docker to automatically delete the container after it stops. Containers remain on your system even after they exit.
+> --rm argument needs to be passed only when we need it short-term, testing/experimenting and using in CLI tools as part of migration. In production, as we need to persist logs and inspect files. Thus, we skip that argument.
