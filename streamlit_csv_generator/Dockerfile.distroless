@@ -43,6 +43,8 @@ FROM gcr.io/distroless/python3-debian11
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /app /app
 
+RUN chown -R appuser:appuser /app /opt/venv
+
 # Copy the *system* stdlib into the venv lib directory so /opt/venv is self-contained
 # Replace /usr/local/lib/python3.11 with the exact path you discovered in the builder.
 COPY --from=builder /usr/local/lib/python3.11 /usr/local/lib/python3.11
