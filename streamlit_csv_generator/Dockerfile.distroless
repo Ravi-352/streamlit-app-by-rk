@@ -32,7 +32,10 @@ COPY . /app
 
 
 # Fix ownership
-RUN chown -R appuser:appuser /app /opt/venv /home/appuser /app/data
+RUN chown -R appuser:appuser /app /opt/venv /home/appuser
+
+# ensure data dir exists and is owned by appuser (in builder stage)
+RUN mkdir -p /app/data && chown -R appuser:appuser /app/data
 
 
 # Runtime: distroless
