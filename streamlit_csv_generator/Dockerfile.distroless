@@ -54,7 +54,7 @@ COPY --from=builder /usr/local/lib/libpython3.11.so.1.0 /usr/local/lib/
 COPY --from=builder /usr/local/lib/libpython3.11.so /usr/local/lib/
 
 # ensure the dynamic loader can find libs in /usr/local/lib
-ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/lib:/lib/x86_64-linux-gnu
 
 # copy libc.so.6 deps
 #COPY --from=builder /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/
