@@ -1,7 +1,20 @@
-
+```bash
 # Build
-docker build -f Dockerfile.distroless -t my-streamlit-csv-viewer:3.10.19-distroless .
+docker build -f Dockerfile.distroless -t my-streamlit-csv-viewer:3.11.8-distroless .
 
 
-# Run
-docker run --rm -p 8502:8502 -p 8000:8000 my-streamlit-csv-viewer:3.10.19-distroless
+# Run following command if you want csv files within container.
+docker run --rm -d -p 8502:8502 -p 8000:8000 my-streamlit-csv-generator:3.11.8-distroless
+
+# spin up container using below, if you want to map files to local volume -
+docker run --rm -d --no-healthcheck\
+  -p 8502:8502 \
+  -p 8000:8000 \
+  -v $(pwd)/data:/app/data \
+  ravi352/my-streamlit-csv-generator:3.11.8-distroless
+
+
+# to check container processes
+docker ps -a
+```
+Once the container is healthy and running, we can access the streamlit app on [http://localhost:8502]
