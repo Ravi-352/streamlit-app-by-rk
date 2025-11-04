@@ -1,6 +1,6 @@
 # Dockerfile.distroless
 # Builder: python 3.11.8-slim
-FROM python:3.10.19-slim AS builder
+FROM python:3.11.8-slim AS builder
 
 
 ENV PYTHONDONTWRITEBYTECODE=1
