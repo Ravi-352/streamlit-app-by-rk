@@ -8,5 +8,5 @@ streamlit>=1.28.0
 
 
 # Networking / monitoring
-requests>=2.25.0
-prometheus-client>=0.12.0
+#requests>=2.25.0
+#prometheus-client>=0.12.0
