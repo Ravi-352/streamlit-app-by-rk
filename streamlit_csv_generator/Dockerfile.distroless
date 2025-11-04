@@ -42,6 +42,10 @@ FROM gcr.io/distroless/python3-debian11
 # Copy venv and app
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /app /app
+
+# copy python shared lib(s) the venv needs
+COPY --from=builder /usr/local/lib/libpython3.11.so.1.0 /usr/local/lib/
+
 # ensure user entry exists
 COPY --from=builder /etc/passwd /etc/passwd
 
