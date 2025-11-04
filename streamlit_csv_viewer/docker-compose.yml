@@ -4,9 +4,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.distroless
-    image: my-mlapp:3.10.19-distroless
+    image: my-csv-viewer:3.10.19-distroless
     ports:
-      - '8501:8501'
+      - '8502:8502'
       - '8000:8000'
     restart: unless-stopped
     healthcheck:
