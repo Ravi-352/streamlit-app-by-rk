@@ -45,7 +45,13 @@ COPY --from=builder /app /app
 
 # Copy the *system* stdlib into the venv lib directory so /opt/venv is self-contained
 # Replace /usr/local/lib/python3.11 with the exact path you discovered in the builder.
-COPY --from=builder /usr/local/lib/python3.11 /opt/venv/lib/python3.11
+COPY --from=builder /usr/local/lib/python3.11 /usr/local/lib/python3.11
+
+# Also copy python lib zip if present (some images have python311.zip)
+COPY --from=builder /usr/local/lib/python311.zip /usr/local/lib/python311.zip
+
+# copy the lib-dynload directory (C extensions)
+COPY --from=builder /usr/local/lib/python3.11/lib-dynload /usr/local/lib/python3.11/lib-dynload
 
 # copy python shared lib(s) the venv needs
 COPY --from=builder /usr/local/lib/libpython3.11.so.1.0 /usr/local/lib/
