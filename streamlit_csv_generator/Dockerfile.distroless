@@ -47,7 +47,7 @@ COPY --from=builder /app /app
 COPY --from=builder /usr/local/lib/libpython3.11.so.1.0 /opt/venv/lib
 
 # also copy any libpython*.so symlinks if present:
-COPY --from=builder /usr/local/lib/libpython3.11.so /usr/local/lib/ || true
+COPY --from=builder /usr/local/lib/libpython3.11.so /usr/local/lib/
 
 # ensure user entry exists
 COPY --from=builder /etc/passwd /etc/passwd
