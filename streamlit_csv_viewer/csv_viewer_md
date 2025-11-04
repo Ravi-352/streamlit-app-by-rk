@@ -2,6 +2,8 @@
 # Build
 docker build -f Dockerfile.distroless -t my-streamlit-csv-viewer:3.11.8-distroless .
 
+# If want to build image from scratch --> 
+docker build --no-cache -f Dockerfile.distroless -t my-streamlit-csv-viewer:3.11.8-distroless .
 
 # Run following command if you want csv files within container.
 docker run --rm -d -p 8502:8502 -p 8000:8000 my-streamlit-csv-generator:3.11.8-distroless
