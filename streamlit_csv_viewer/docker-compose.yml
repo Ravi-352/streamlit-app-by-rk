@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.distroless
+    image: my-mlapp:3.10.19-distroless
+    ports:
+      - '8501:8501'
+      - '8000:8000'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket,sys; s=socket.socket(); s.settimeout(2); \n try: s.connect(('127.0.0.1',8501)); s.close(); sys.exit(0) \n except: sys.exit(1)"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+
+  # optional: a Prometheus example (your friends can connect their Prometheus to scrape metrics)
+  # prometheus:
+    # image: prom/prometheus:latest
+    # ports:
+      # - '9090:9090'

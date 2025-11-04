@@ -1,0 +1,42 @@
+# Dockerfile.debug
+# Debug-friendly image with shell and tools
+FROM python:3.10.19-slim AS builder
+
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+
+WORKDIR /app
+
+
+# Install build deps and debugging tools
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends build-essential curl less vim iputils-ping netcat \
+  && rm -rf /var/lib/apt/lists/*
+
+
+# Create non-root user
+RUN useradd --uid 1000 --create-home --home-dir /home/appuser appuser
+
+
+COPY requirements.txt /app/requirements.txt
+RUN python -m venv /opt/venv \
+  && /opt/venv/bin/pip install --upgrade pip setuptools wheel \
+  && /opt/venv/bin/pip install --no-cache-dir -r /app/requirements.txt
+
+COPY . /app
+RUN chown -R appuser:appuser /app /opt/venv /home/appuser
+
+
+WORKDIR /app
+ENV PATH=/opt/venv/bin:$PATH
+USER appuser
+
+
+# Expose ports
+EXPOSE 8501 8000
+
+
+# Start with a shell by default to aid debugging (override to run streamlit)
+CMD ["/bin/bash"]
