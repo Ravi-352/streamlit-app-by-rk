@@ -1,0 +1,23 @@
+# Core data and scientific stack
+numpy>1.21.0
+pandas>=1.5.0
+scipy>=1.7.0
+scikit-learn>=1.0.0
+statsmodels>0.14.0
+joblib>=1.0.0
+pyyaml>=6.0
+
+
+# Visualization & UI
+streamlit>=1.28.0
+plotly>5.0.0
+
+
+# ML/Explainability
+tensorflow>=2.8.0
+shap>=0.41.0
+
+
+# Networking / monitoring
+requests>=2.25.0
+prometheus-client>=0.12.0
