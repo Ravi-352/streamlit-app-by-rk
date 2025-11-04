@@ -1,6 +1,21 @@
 # streamlit-app-by-rk
 exploring and testing a streamlit app
 
+
+## Comparision Table:  
+| Aspect                     |                                                             Streamlit | Flask                                      | Django                                            |
+| -------------------------- | --------------------------------------------------------------------: | ------------------------------------------ | ------------------------------------------------- |
+| Primary use                |                                       Data apps, dashboards, ML demos | General web services, APIs, small web apps | Full-featured web apps, complex sites, enterprise |
+| Programming model          |                      Declarative script, auto re-run on widget events | Request-response, route functions          | Request-response, MTV pattern, structured apps    |
+| Templating                 |                                       Not needed (widgets + markdown) | Jinja2 templates available                 | Django templates                                  |
+| State                      |                                   `st.session_state` (session-scoped) | manage via cookies/sessions                | sessions, auth, middleware                        |
+| Routing & URLs             |                                         Basic multipage (via sidebar) | Full control over routes                   | Full control, URL dispatching                     |
+| Authentication, ORM, Admin |                                     Not built-in (3rd-party patterns) | Not built-in (extensions available)        | Built-in auth, ORM, admin, migrations             |
+| Concurrency & scaling      | Suited for moderate loads; use multiple processes/containers to scale | Highly scalable with proper deployment     | Scalable; built for production complexity         |
+| Learning curve             |                                             Very low for Python users | Low–medium (web concepts)                  | Higher (convention and features)                  |
+| Best for                   |                            Prototypes, analytics dashboards, ML demos | APIs, microservices, custom web flows      | Complex sites, data models, multi-user apps       |
+
+
 # Distroless Streamlit + Prometheus Package
 
 
