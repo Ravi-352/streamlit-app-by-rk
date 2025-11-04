@@ -3,8 +3,19 @@
 docker build -f Dockerfile.distroless -t my-streamlit-csv-generator:3.10.19-distroless .
 
 
-# Run
+# Run following command if you want csv files within container.
 docker run --rm -d -p 8501:8501 -p 8000:8000 my-streamlit-csv-generator:3.10.19-distroless
+
+# spin up container using below, if you want to map files to local volume -
+docker run --rm -d \
+  -p 8501:8501 \
+  -p 8000:8000 \
+  -v $(pwd)/data:/app/data \
+  ravi352/my-streamlit-csv-generator:3.11.8-distroless
+
 
 # to check container processes
 docker ps -a
+```
+Once the container is healthy and running, we can access the streamlit app on [http://localhost:8501]
+
