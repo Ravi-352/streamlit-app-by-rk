@@ -1,6 +1,6 @@
 # Dockerfile.distroless
 # Builder: python 3.11.8-slim
-FROM python:3.10.19-slim AS builder
+FROM python:3.11.8-slim-bullseye AS builder
 
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -22,7 +22,7 @@ RUN useradd --uid 1000 --create-home --home-dir /home/appuser appuser
 
 # Copy requirements and install into venv
 COPY requirements.txt /app/requirements.txt
-RUN python -m venv /opt/venv \
+RUN python -m venv --copies /opt/venv \
   && /opt/venv/bin/pip install --upgrade pip setuptools wheel \
   && /opt/venv/bin/pip install --no-cache-dir -r /app/requirements.txt
 
@@ -34,6 +34,9 @@ COPY . /app
 # Fix ownership
 RUN chown -R appuser:appuser /app /opt/venv /home/appuser
 
+# ensure data dir exists and is owned by appuser (in builder stage)
+RUN mkdir -p /app/data && chown -R appuser:appuser /app/data
+
 
 # Runtime: distroless
 FROM gcr.io/distroless/python3-debian11
@@ -42,6 +45,29 @@ FROM gcr.io/distroless/python3-debian11
 # Copy venv and app
 COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder /app /app
+
+# Copy the *system* stdlib into the venv lib directory so /opt/venv is self-contained
+# Replace /usr/local/lib/python3.11 with the exact path you discovered in the builder.
+COPY --from=builder /usr/local/lib/python3.11 /usr/local/lib/python3.11
+
+# Also copy python lib zip if present (some images have python311.zip)
+#COPY --from=builder /usr/local/lib/python311.zip /usr/local/lib/python311.zip
+
+# copy the lib-dynload directory (C extensions)
+#COPY --from=builder /usr/local/lib/python3.11/lib-dynload /usr/local/lib/python3.11/lib-dynload
+
+# copy python shared lib(s) the venv needs
+COPY --from=builder /usr/local/lib/libpython3.11.so.1.0 /usr/local/lib/
+
+# also copy any libpython*.so symlinks if present:
+COPY --from=builder /usr/local/lib/libpython3.11.so /usr/local/lib/
+
+# ensure the dynamic loader can find libs in /usr/local/lib
+ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/lib:/lib/x86_64-linux-gnu
+
+# copy libc.so.6 deps
+#COPY --from=builder /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/
+
 # ensure user entry exists
 COPY --from=builder /etc/passwd /etc/passwd
 
@@ -60,10 +86,14 @@ USER appuser
 
 # Healthcheck using Python to connect to Streamlit port
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-  CMD python -c "import sys,socket; s=socket.socket(); s.settimeout(2); \
-  try: s.connect(('127.0.0.1',8502)); s.close(); sys.exit(0) \
-  except Exception as e: sys.exit(1)"
+  CMD /opt/venv/bin/python -c "import sys,socket; s=socket.socket(); s.settimeout(2); \
+  try: \
+    s.connect(('127.0.0.1',8502)); s.close(); sys.exit(0) \
+  except Exception as e: \
+    sys.exit(1)"
 
+# Make the venv python the ENTRYPOINT so we avoid any shebang / system python ambiguity
+ENTRYPOINT ["/opt/venv/bin/python", "-m", "streamlit"]
 
-# Default entry: run streamlit
-CMD ["streamlit", "run", "app_viewer.py", "--server.port=8502", "--server.address=0.0.0.0"]
+# CMD supplies the module args (can be overridden by docker run)
+CMD ["run", "app_viewer.py", "--server.port=8502", "--server.address=0.0.0.0"]
