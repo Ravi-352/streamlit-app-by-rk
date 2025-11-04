@@ -1,5 +1,5 @@
 # Core data and scientific stack
-numpy>1.21.0
+#numpy>1.21.0
 pandas>=1.5.0
 
 # Visualization & UI
