@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.distroless
-    image: my-csv-viewer:3.10.19-distroless
+    image: my-streamlit-csv-viewer:3.10.19-distroless
     ports:
       - '8502:8502'
       - '8000:8000'
