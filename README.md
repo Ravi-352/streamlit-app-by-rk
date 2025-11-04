@@ -22,3 +22,6 @@ docker build -f Dockerfile.distroless -t my-mlapp:3.10.19-distroless .
 
 # Run
 docker run --rm -p 8501:8501 -p 8000:8000 my-mlapp:3.10.19-distroless
+```
+
+UI: http://localhost:8501 Prometheus metrics: http://localhost:8000/metrics
