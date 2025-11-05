@@ -13,7 +13,7 @@ docker run --rm -d --no-healthcheck\
   -p 8502:8502 \
   -p 8000:8000 \
   -v $(pwd)/data:/app/data \
-  ravi352/my-streamlit-csv-generator:3.11.8-distroless
+  ravi352/my-streamlit-csv-viewer:3.11.8-distroless
 
 
 # to check container processes
