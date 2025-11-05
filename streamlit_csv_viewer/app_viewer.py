@@ -25,7 +25,9 @@ df = None
 if choice == "Upload file":
     uploaded = st.file_uploader("Upload CSV", type="csv")
     if uploaded is not None:
+        # Save in session_state
         st.session_state.uploaded_df = pd.read_csv(uploaded)
+
     df = st.session_state.uploaded_df
 else:
     if server_files:
