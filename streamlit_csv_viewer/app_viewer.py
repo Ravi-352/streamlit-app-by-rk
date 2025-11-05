@@ -17,11 +17,16 @@ st.write("Upload a CSV or pick one from the server `data/` folder to inspect, fi
 server_files = sorted([f for f in os.listdir(DATA_DIR) if f.lower().endswith(".csv")])
 choice = st.radio("Load CSV from:", ("Upload file", "Choose from server `data/`"), index=1 if server_files else 0)
 
+# Initialize session_state to store uploaded file content
+if "uploaded_df" not in st.session_state:
+    st.session_state.uploaded_df = None
+
 df = None
 if choice == "Upload file":
     uploaded = st.file_uploader("Upload CSV", type="csv")
     if uploaded is not None:
-        df = pd.read_csv(uploaded)
+        st.session_state.uploaded_df = pd.read_csv(uploaded)
+    df = st.session_state.uploaded_df
 else:
     if server_files:
         sel = st.selectbox("Select file", server_files)
