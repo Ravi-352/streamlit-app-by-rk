@@ -85,18 +85,11 @@ USER appuser
 
 
 # Healthcheck using Python to connect to Streamlit port
-HEALTHCHECK --interval=60s --timeout=3s --start-period=60s --retries=3 CMD \
-  /opt/venv/bin/python - << 'EOF' \
-  import sys,socket
-  s=socket.socket()
-  s.settimeout(2)
-  try: 
-    s.connect(('127.0.0.1',8502))
-    s.close()
-    sys.exit(0)
-  except Exception as e:
-    sys.exit(1)"
-EOF
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
+ # CMD ["/opt/venv/bin/python", "-c", "import socket,sys; s=socket.socket(); s.settimeout(2); res=s.connect_ex(('127.0.0.1',8501)); print('hc',res); sys.exit(0 if res==0 else 1)"]
+ CMD ["/opt/venv/bin/python", "-c", "import socket,sys; s=socket.socket(); s.settimeout(2); try: s.connect(('127.0.0.1',8502)); s.close(); sys.exit(0); \
+      except Exception as e: sys.exit(1)]
+
 
 # Make the venv python the ENTRYPOINT so we avoid any shebang / system python ambiguity
 ENTRYPOINT ["/opt/venv/bin/python", "-m", "streamlit"]
