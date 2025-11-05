@@ -21,5 +21,12 @@ docker ps -a
 
 #docker inspect 
 docker inspect --format '{{json .State.Health}}' <container-id>
+
+# Sample commands if want to build image for multi-platform
+docker buildx create --name mybuilder --use
+docker buildx build --platform linux/amd64,linux/arm64 -f  Dockerfile.distroless -t  ravi352/my-streamlit-csv-viewer:3.11.8-distroless-2 . --push
+
+#inspect the images generated with buildx
+docker buildx imagetools inspect ravi352/my-streamlit-csv-viewer:3.11.8-distroless-2
 ```
 Once the container is healthy and running, we can access the streamlit app on [http://localhost:8502]
