@@ -18,5 +18,8 @@ docker run --rm -d --no-healthcheck\
 
 # to check container processes
 docker ps -a
+
+#docker inspect 
+docker inspect --format '{{json .State.Health}}' <container-id>
 ```
 Once the container is healthy and running, we can access the streamlit app on [http://localhost:8502]
