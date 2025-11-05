@@ -75,6 +75,13 @@ COPY --from=builder /etc/passwd /etc/passwd
 WORKDIR /app
 ENV PATH=/opt/venv/bin:$PATH
 
+# Make directories writable
+RUN mkdir -p /app/data /app/.streamlit /app/tmp /home/appuser \
+    && chown -R appuser:appuser /app/data /app/.streamlit /app/tmp /home/appuser
+
+# Streamlit temp/cache locations
+ENV STREAMLIT_HOME=/app/.streamlit
+ENV TMPDIR=/app/tmp
 
 # Expose Streamlit UI and Prometheus metrics port
 EXPOSE 8502 8000
@@ -85,10 +92,8 @@ USER appuser
 
 
 # Healthcheck using Python to connect to Streamlit port
-HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
- # CMD ["/opt/venv/bin/python", "-c", "import socket,sys; s=socket.socket(); s.settimeout(2); res=s.connect_ex(('127.0.0.1',8501)); print('hc',res); sys.exit(0 if res==0 else 1)"]
- CMD ["/opt/venv/bin/python", "-c", "import socket,sys; s=socket.socket(); s.settimeout(2); try: s.connect(('127.0.0.1',8502)); s.close(); sys.exit(0); \
-      except Exception as e: sys.exit(1)"]
+HEALTHCHECK --interval=60s --timeout=5s --start-period=180s --retries=5 \
+ CMD ["/opt/venv/bin/python", "-c", "import socket,sys; s=socket.socket(); s.settimeout(2); res=s.connect_ex(('127.0.0.1',8501)); print('hc',res); sys.exit(0 if res==0 else 1)"]
 
 
 # Make the venv python the ENTRYPOINT so we avoid any shebang / system python ambiguity
