@@ -30,12 +30,9 @@ RUN python -m venv --copies /opt/venv \
 # Copy application
 COPY . /app
 
-
-# Fix ownership
-RUN chown -R appuser:appuser /app /opt/venv /home/appuser
-
-# ensure data dir exists and is owned by appuser (in builder stage)
-RUN mkdir -p /app/data && chown -R appuser:appuser /app/data
+# Create runtime dirs and fix ownership in builder (must run in builder stage)
+RUN mkdir -p /home/appuser /app/data /app/.streamlit /app/tmp \
+&& chown -R appuser:appuser /home/appuser /app /opt/venv
 
 
 # Runtime: distroless
@@ -50,12 +47,6 @@ COPY --from=builder /app /app
 # Replace /usr/local/lib/python3.11 with the exact path you discovered in the builder.
 COPY --from=builder /usr/local/lib/python3.11 /usr/local/lib/python3.11
 
-# Also copy python lib zip if present (some images have python311.zip)
-#COPY --from=builder /usr/local/lib/python311.zip /usr/local/lib/python311.zip
-
-# copy the lib-dynload directory (C extensions)
-#COPY --from=builder /usr/local/lib/python3.11/lib-dynload /usr/local/lib/python3.11/lib-dynload
-
 # copy python shared lib(s) the venv needs
 COPY --from=builder /usr/local/lib/libpython3.11.so.1.0 /usr/local/lib/
 
@@ -65,9 +56,6 @@ COPY --from=builder /usr/local/lib/libpython3.11.so /usr/local/lib/
 # ensure the dynamic loader can find libs in /usr/local/lib
 ENV LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/lib:/lib/x86_64-linux-gnu
 
-# copy libc.so.6 deps
-#COPY --from=builder /lib/x86_64-linux-gnu/libc.so.6 /lib/x86_64-linux-gnu/
-
 # ensure user entry exists
 COPY --from=builder /etc/passwd /etc/passwd
 
@@ -75,11 +63,8 @@ COPY --from=builder /etc/passwd /etc/passwd
 WORKDIR /app
 ENV PATH=/opt/venv/bin:$PATH
 
-# Make directories writable
-RUN mkdir -p /app/data /app/.streamlit /app/tmp /home/appuser \
-    && chown -R appuser:appuser /app/data /app/.streamlit /app/tmp /home/appuser
-
 # Streamlit temp/cache locations
+ENV HOME=/home/appuser
 ENV STREAMLIT_HOME=/app/.streamlit
 ENV TMPDIR=/app/tmp
 
