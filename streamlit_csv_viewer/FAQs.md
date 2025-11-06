@@ -124,3 +124,12 @@ Random garbage data cannot be compressed.
 
 ✅ So this prepares the filesystem to be shrinkable.
 
+## Q. How do you clean Disk in windows.
+Ans: Clean Manager tool in windows. Run ```cleanmgr``` in Powershell. It opens up a GUI and we need to specify what to clean.
+
+Alternately. we can directly give - ```cleanmgr /verylowdisk``` --
+- Runs Disk Cleanup automatically
+- Assumes the disk is critically low on space
+- Cleans everything it safely can without asking
+- Automatically deletes temporary files, old logs, cache, Recycle Bin, etc
+It behaves like: “Disk is full. Clean as much as possible without asking user.
