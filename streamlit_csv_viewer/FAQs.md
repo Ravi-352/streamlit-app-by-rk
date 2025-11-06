@@ -82,6 +82,10 @@ FullName                                                                        
 --------                                                                            ------
 C:\Users\ARKiran\AppData\Local\wsl\{62458a0c-5062-4aa4-8593-a1d31a030e30}\ext4.vhdx 54.09
 ```
+Before proceeding for cleanup --
+<img width="497" height="107" alt="image" src="https://github.com/user-attachments/assets/2c6a7534-1612-496d-8e49-7bd4e1892f5f" />
+
+
 ### ✅ Step 1 — inside WSL: Fill free space with zeroes
 SO now we run below commands from **unix shell (wsl terminal)**:  
 ```
@@ -91,6 +95,8 @@ sudo rm /zerofile
 sudo sync
 
 ```
+<img width="835" height="232" alt="image" src="https://github.com/user-attachments/assets/de86e97d-f2f2-46a7-b102-8a577cbacf18" />
+
 
 ### ✅ Step 2 — Open Powershell and Shut down WSL completely
 
@@ -111,6 +117,9 @@ detach vdisk
 exit
 
 ```
+<img width="912" height="373" alt="image" src="https://github.com/user-attachments/assets/9ef366dd-4f8e-4e6c-8092-e4268e39bcd3" />
+
+After cleanup -->  
 
 
 #### what does the command do -->  ```sudo dd if=/dev/zero of=/zerofile bs=1M``` ?
