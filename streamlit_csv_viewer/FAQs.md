@@ -57,3 +57,70 @@ OK: /home/appuser
 OK: /app/.streamlit
 OK: /app/tmp
 ```
+
+Q. Troubleshooting storage leak by wsl - wsl mount space keeps exapnding but never release disk. If we have windows pro - we have option to optimize virtual disk usage. But in case no, we have to do manual cleaning. How shall we do that?
+
+Ans: 
+From Powershell - Troubleshoot path of wsl that is leaking disk storage. ---> on of the below must give appropriate output.
+
+```
+ Get-ChildItem "C:\Users\$env:USERNAME\AppData\Local\Docker\wsl\data" -Recurse -Filter *.vhdx -ErrorAction SilentlyContinue |
+>> Select-Object FullName,@{N='SizeGB';E={"{0:N2}" -f ($_.Length/1GB)}}
+
+ Get-ChildItem "C:\Users\$env:USERNAME\AppData\Local\DockerDesktop" -Recurse -Filter *.vhdx -ErrorAction SilentlyContinue |
+>> Select-Object FullName,@{N='SizeGB';E={"{0:N2}" -f ($_.Length/1GB)}}
+
+# In our case this worked - 
+PS C:\Users\ARKiran> Get-ChildItem "C:\Users\$env:USERNAME\AppData\Local\wsl" -Recurse -Filter *.vhdx -ErrorAction SilentlyContinue |
+>> Select-Object FullName,@{N='SizeGB';E={"{0:N2}" -f ($_.Length/1GB)}}
+```
+
+OUTPUT sample:  
+```
+
+FullName                                                                            SizeGB
+--------                                                                            ------
+C:\Users\ARKiran\AppData\Local\wsl\{62458a0c-5062-4aa4-8593-a1d31a030e30}\ext4.vhdx 54.09
+```
+### ✅ Step 1 — inside WSL: Fill free space with zeroes
+SO now we run below commands from **unix shell (wsl terminal)**:  
+```
+sudo dd if=/dev/zero of=/zerofile bs=1M
+sudo sync
+sudo rm /zerofile
+sudo sync
+
+```
+
+### ✅ Step 2 — Open Powershell and Shut down WSL completely
+
+```
+wsl --shutdown
+
+```
+
+### ✅ Step 2 — Open Powershell as Administrator and ---  
+From above sample output, our GUID = 62458a0c-5062-4aa4-8593-a1d31a030e30
+
+```
+diskpart
+select vdisk file="C:\Users\ARKiran\AppData\Local\wsl\{62458a0c-5062-4aa4-8593-a1d31a030e30}\ext4.vhdx"
+attach vdisk readonly
+compact vdisk
+detach vdisk
+exit
+
+```
+
+
+#### what does the command do -->  ```sudo dd if=/dev/zero of=/zerofile bs=1M``` ?
+
+- Creates a big temporary file named /zerofile
+- Fills it with zeros (0x00 bytes) until there is no free space left
+- Purpose: overwrite deleted/unused disk blocks with zeros
+
+When Windows tries to shrink the VHDX, it can only reduce size where free space is zero-filled.
+Random garbage data cannot be compressed.
+
+✅ So this prepares the filesystem to be shrinkable.
+
