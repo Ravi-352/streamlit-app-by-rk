@@ -142,3 +142,21 @@ Alternately. we can directly give - ```cleanmgr /verylowdisk``` --
 - Cleans everything it safely can without asking
 - Automatically deletes temporary files, old logs, cache, Recycle Bin, etc
 It behaves like: “Disk is full. Clean as much as possible without asking user.
+
+
+## Q. app_viewer.py was unable to display prometheus-client version.
+Ans:
+Unlike other modules involved, for prometheus-client we can't fetch version using ```import``` name. We have to fetch that from metadata. Following steps below -  
+```
+# check container id
+docker ps
+# exec to container with python env
+ docker exec -it <containerId> /opt/venv/bin/python
+
+#import importlib module
+ from importlib.metadata import version as dist_version, PackageNotFoundError
+
+# Print the prometheus-client version if install and import was successful -->
+print(f"prometheus version - {dist_version('prometheus-client')}")
+
+```
