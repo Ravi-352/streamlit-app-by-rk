@@ -4,6 +4,28 @@ import pandas as pd
 import os
 import re
 from io import StringIO
+import numpy
+import plotly
+import sklearn
+import statsmodels
+import joblib
+import scipy
+import shap
+import tensorflow
+import requests
+import prometheus_client
+import pkg_resources
+
+packages = ["pd", "numpy", "plotly", "scikit-learn", "statsmodels", "joblib", "scipy", "shap", "tensorflow", "requests", "prometheus-client"]
+
+for p in packages:
+    try:
+        version = pkg_resources.get_distribution(p).version
+        print(f"{p}: {version}")
+    except Exception as e:
+        print(f"{p}: NOT INSTALLED ({e})")
+
+
 
 st.set_page_config(page_title="CSV Viewer", layout="wide")
 
