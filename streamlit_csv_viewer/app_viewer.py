@@ -15,18 +15,47 @@ import tensorflow
 import requests
 import prometheus_client
 import pkg_resources
+import importlib
+import yaml
 
-packages = ["pd", "numpy", "plotly", "scikit-learn", "statsmodels", "joblib", "scipy", "shap", "tensorflow", "requests", "prometheus-client"]
+packages = ["pandas", "numpy", "yaml", "streamlit", "plotly", "sklearn", "statsmodels", "joblib", "scipy", "shap", "tensorflow", "requests", "prometheus_client"]
 
-for p in packages:
-    try:
-        version = pkg_resources.get_distribution(p).version
-        print(f"{p}: {version}")
-    except Exception as e:
-        print(f"{p}: NOT INSTALLED ({e})")
+def show_versions():
+    st.write("### Library Versions")
+    rows = []
+    for p in packages:
+        try:
+            mod = importlib.import_module(p)
+            ver = getattr(mod,"__version__", None)
+            rows.append({"module": p, "version": ver})
+        except Exception as e:
+            #st.write(f"{p}: Error --> {type(e).__name__}: {e}")
+            rows.append({"module": p, "version": f"NOT INSTALLED ({e})"})
+    return rows
+
+# --- Sidebar toggle state ---
+if "show_versions" not in st.session_state:
+    st.session_state.show_versions = False
+
+def toggle_versions():
+    st.session_state.show_versions = not st.session_state.show_versions
+
+# --- Toggle button ---
+st.sidebar.button(
+    "Hide Import Module Versions" if st.session_state.show_versions else "Show Import Module Versions",
+    on_click=toggle_versions,
+)
+
+# --- Sidebar content ---
+with st.sidebar:
+    if st.session_state.show_versions:
+        st.markdown("### Library Versions")
+        data = show_versions()
+        st.table(data)
 
 
 
+    
 st.set_page_config(page_title="CSV Viewer", layout="wide")
 
 DATA_DIR = "data"
@@ -34,6 +63,8 @@ os.makedirs(DATA_DIR, exist_ok=True)
 
 st.title("CSV Inspector / Viewer")
 st.write("Upload a CSV or pick one from the server `data/` folder to inspect, filter and download.")
+
+
 
 # Option to pick server-side file
 server_files = sorted([f for f in os.listdir(DATA_DIR) if f.lower().endswith(".csv")])
